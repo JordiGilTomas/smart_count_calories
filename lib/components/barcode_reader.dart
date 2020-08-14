@@ -7,10 +7,14 @@ class BarcodeReader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: RaisedButton(
-          onPressed: () async => onRead(await getBarcode()),
-          child: Text('Leer código de barras')),
+    return Padding(
+      padding: EdgeInsets.all(30.0),
+      child: Container(
+        child: RaisedButton(
+            onPressed: () async => onRead(await getBarcode()),
+            // onPressed: () async => onRead('4008713756661'),
+            child: Text('Leer código de barras')),
+      ),
     );
   }
 

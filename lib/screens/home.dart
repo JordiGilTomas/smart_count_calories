@@ -11,7 +11,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Product product;
+  ProductResult productResult;
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +21,22 @@ class _HomeState extends State<Home> {
       ),
       body: SafeArea(
           child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           BarcodeReader(onRead: (barcode) async {
-            product = (await Food.getProduct(barcode)).product;
-            print(product);
+            productResult = (await Food.getProduct(barcode));
             setState(() {});
+            if (productResult?.status == 1)
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => ProductCard(
+                            product: productResult.product,
+                          )));
           }),
-          product != null
-              ? ProductCard(product: product)
-              : Text('Ningún artículo'),
+          if (productResult != null && productResult?.status != 1)
+            Center(child: Text(productResult?.statusVerbose)),
         ],
       )),
       // FloatingActionButton(
