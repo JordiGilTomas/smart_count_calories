@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:openfoodfacts/model/parameter/SearchTerms.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:smart_count_calories/components/barcode_reader.dart';
-import 'package:smart_count_calories/components/product_card.dart';
+import 'package:smart_count_calories/screens/product.dart';
 import 'package:smart_count_calories/food.dart';
 
 class Home extends StatefulWidget {
