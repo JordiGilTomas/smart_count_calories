@@ -18,7 +18,7 @@ class ItemNutrition extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20.0),
       child: Container(
-        color: Colors.grey[900],
+        color: Theme.of(context).backgroundColor,
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 5.0),
           child: Column(children: [
@@ -27,6 +27,8 @@ class ItemNutrition extends StatelessWidget {
                     textAlign: TextAlign.center,
                     text: TextSpan(
                         text: '$topNameLine1\n',
+                        style: TextStyle(
+                            color: Theme.of(context).textTheme.button.color),
                         children: [TextSpan(text: '$topNameLine2')]),
                   )
                 : Text(topNameLine1),
