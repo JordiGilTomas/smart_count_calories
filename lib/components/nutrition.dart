@@ -20,7 +20,7 @@ class Nutrition extends StatelessWidget {
       crossAxisSpacing: 20,
       mainAxisSpacing: 20,
       crossAxisCount: 3,
-      childAspectRatio: 20 / 16,
+      childAspectRatio: 20 / 17,
       shrinkWrap: true,
       children: [
         ItemNutrition(

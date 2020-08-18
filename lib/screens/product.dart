@@ -3,7 +3,7 @@ import 'package:openfoodfacts/model/NutrientLevels.dart';
 import 'package:openfoodfacts/model/Nutriments.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:smart_count_calories/components/nutrition.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smart_count_calories/components/score.dart';
 
 class ProductCard extends StatefulWidget {
   ProductCard({this.product});
@@ -17,6 +17,7 @@ class _ProductCardState extends State<ProductCard> {
   double gramos = 100.0;
 
   final textEditingController = TextEditingController();
+  bool showFloatButton = true;
 
   @override
   void initState() {
@@ -54,13 +55,15 @@ class _ProductCardState extends State<ProductCard> {
             children: [
               Expanded(
                 child: Scaffold(
-                  floatingActionButton: FloatingActionButton.extended(
-                    icon: Icon(Icons.add),
-                    onPressed: () => null,
-                    label: Text(
-                      'Añadir producto',
-                    ),
-                  ),
+                  floatingActionButton: showFloatButton
+                      ? FloatingActionButton.extended(
+                          icon: Icon(Icons.add),
+                          onPressed: () => null,
+                          label: Text(
+                            'Añadir producto',
+                          ),
+                        )
+                      : null,
                   appBar: AppBar(
                     leading: Padding(
                       padding: EdgeInsets.all(10.0),
@@ -129,29 +132,33 @@ class _ProductCardState extends State<ProductCard> {
                               children: [
                                 Expanded(
                                   child: TextField(
-                                    controller: textEditingController,
-                                    textAlign: TextAlign.center,
-                                    keyboardType: TextInputType.number,
-                                    onTap: () {
-                                      setState(() {
+                                      controller: textEditingController,
+                                      textAlign: TextAlign.center,
+                                      keyboardType: TextInputType.number,
+                                      onTap: () {
+                                        setState(() {
+                                          textEditingController.text =
+                                              textEditingController.text
+                                                  .split('gramos')[1];
+                                          showFloatButton = false;
+                                        });
+                                      },
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (int.parse(value) > 500) {
+                                            textEditingController.text = '500';
+                                            value = '500';
+                                          }
+                                          gramos = double.parse(value);
+                                        });
+                                      },
+                                      onSubmitted: (value) {
                                         textEditingController.text =
-                                            textEditingController.text
-                                                .split('gramos')[1];
-                                      });
-                                    },
-                                    onChanged: (value) {
-                                      setState(() {
-                                        if (int.parse(value) > 500) {
-                                          textEditingController.text = '500';
-                                          value = '500';
-                                        }
-                                        gramos = double.parse(value);
-                                      });
-                                    },
-                                    onSubmitted: (value) =>
-                                        textEditingController.text =
-                                            '${gramos.toInt()}  gramos',
-                                  ),
+                                            '${gramos.toInt()}  gramos';
+                                        setState(() {
+                                          showFloatButton = true;
+                                        });
+                                      }),
                                 ),
                               ],
                             ),
@@ -176,147 +183,13 @@ class _ProductCardState extends State<ProductCard> {
                           )
                         ],
                       ),
-                      ListView(children: [
-                        Column(children: [
-                          Container(
-                            height: 150.0,
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  if (widget.product.nutriscore != null)
-                                    SvgPicture.asset(
-                                      'images/nutriscore_${widget.product.nutriscore}.svg',
-                                      height: 100.0,
-                                    ),
-                                  if (nutriments.novaGroup != null)
-                                    Container(
-                                      color: Colors.white,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.white,
-                                                width: 10.0)),
-                                        child: SvgPicture.asset(
-                                          'images/nova_${nutriments.novaGroup}.svg',
-                                          height: 80.0,
-                                        ),
-                                      ),
-                                    )
-                                ]),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(10.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Card(
-                                // color: Colors.blueGrey[700],
-                                color: Theme.of(context).primaryColor,
-                                child: Padding(
-                                  padding: EdgeInsets.all(0.0),
-                                  child: Column(children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          child: Expanded(
-                                            child: Container(
-                                              // color: Colors.blueGrey[900],
-                                              color: Theme.of(context)
-                                                  .primaryColorDark,
-
-                                              child: Padding(
-                                                padding: EdgeInsets.all(5.0),
-                                                child: Text(
-                                                  'Nutrition Levels',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                      fontSize: 18.0,
-                                                      color: Theme.of(context)
-                                                          .primaryTextTheme
-                                                          .button
-                                                          .color),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    for (var level in levels)
-                                      Column(children: [
-                                        SizedBox(
-                                          height: 5.0,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            Flexible(
-                                              fit: FlexFit.tight,
-                                              child: Text(
-                                                '${level.key.toUpperCase()}',
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                            Flexible(
-                                              fit: FlexFit.tight,
-                                              child: Text(
-                                                '${level.value.value.toUpperCase()}',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    color: level.value.value ==
-                                                            'low'
-                                                        ? Colors.green[Theme.of(
-                                                                        context)
-                                                                    .brightness
-                                                                    .toString() ==
-                                                                'Brightness.dark'
-                                                            ? 200
-                                                            : 800]
-                                                        : level.value.value ==
-                                                                'moderate'
-                                                            ? Colors.orange[800]
-                                                            : Colors.red[800],
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 5.0,
-                                        ),
-                                      ]),
-                                  ]),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                if (isVegan == 'vegan')
-                                  SvgPicture.asset(
-                                    'images/vegan.svg',
-                                    height: 80.0,
-                                  ),
-                                if (isVegetarian == 'vegetarian')
-                                  SvgPicture.asset(
-                                    'images/vegetarian.svg',
-                                    height: 85.0,
-                                  ),
-                                if (isPalmOilFree == 'palm-oil-free')
-                                  SvgPicture.asset(
-                                    'images/palm-oil-free.svg',
-                                    height: 70.0,
-                                  ),
-                              ]),
-                        ])
-                      ]),
+                      Score(
+                          nutriscore: widget.product.nutriscore,
+                          nutriments: nutriments,
+                          levels: levels,
+                          isVegan: isVegan,
+                          isVegetarian: isVegetarian,
+                          isPalmOilFree: isPalmOilFree),
                       ListView(
                         children: [
                           Column(

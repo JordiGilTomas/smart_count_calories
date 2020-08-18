@@ -15,48 +15,51 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Smart Count Calories'),
-      ),
-      body: SafeArea(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BarcodeReader(onRead: (barcode) async {
-            productResult = (await Food.getProduct(barcode));
-            setState(() {});
-            if (productResult?.status == 1)
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Smart Count Calories'),
+        ),
+        body: SafeArea(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BarcodeReader(onRead: (barcode) async {
+              productResult = (await Food.getProduct(barcode));
+              setState(() {});
+              if (productResult?.status == 1)
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
                       builder: (BuildContext context) => ProductCard(
-                            product: productResult.product,
-                          )));
-          }),
-          if (productResult != null && productResult?.status != 1)
-            Center(child: Text(productResult?.statusVerbose)),
-        ],
-      )),
-      // FloatingActionButton(
-      //   onPressed: () {
+                        product: productResult.product,
+                      ),
+                    ));
+            }),
+            if (productResult != null && productResult?.status != 1)
+              Center(child: Text(productResult?.statusVerbose)),
+          ],
+        )),
+        // FloatingActionButton(
+        //   onPressed: () {
 
-      // async {
-      // final String barcode = await FlutterBarcodeScanner.scanBarcode(
-      //     "#ff6666", "Cancel", true, ScanMode.BARCODE);
+        // async {
+        // final String barcode = await FlutterBarcodeScanner.scanBarcode(
+        //     "#ff6666", "Cancel", true, ScanMode.BARCODE);
 
-      // ProductResult pr = await getProduct(barcode);
-      // Nutriments n = pr.product.nutriments;
-      // n.toData().forEach((key, value) {
-      //   print('key $key value $value');
-      // });
-      // print((await searchProduct()).map((element) {
-      //   return element.toData().forEach((key, value) {
-      //     print('Key: $key Value: $value');
-      //   });
-      // }));
-      // },
+        // ProductResult pr = await getProduct(barcode);
+        // Nutriments n = pr.product.nutriments;
+        // n.toData().forEach((key, value) {
+        //   print('key $key value $value');
+        // });
+        // print((await searchProduct()).map((element) {
+        //   return element.toData().forEach((key, value) {
+        //     print('Key: $key Value: $value');
+        //   });
+        // }));
+        // },
+      ),
     );
   }
 

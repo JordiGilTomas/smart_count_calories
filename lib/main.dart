@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Smart Count Calories',
       theme: ThemeData.dark(
-          // primarySwatch: Colors.deepPurple,
+          // primarySwatch: Colors.lightGreen,
           // visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
       home: Home(),
