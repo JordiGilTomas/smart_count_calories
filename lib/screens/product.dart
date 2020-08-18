@@ -14,7 +14,7 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-  double gramos = 100.0;
+  double quantity = 100.0;
 
   final textEditingController = TextEditingController();
   String selectedMeasure = 'gramos';
@@ -53,6 +53,12 @@ class _ProductCardState extends State<ProductCard> {
       'vasito vino': 1,
       'vasito licor': 0.50
     };
+
+    final Map<double, String> servingMeasure = RegExp(r'([\d]+)([a-z]+)')
+        .allMatches(widget.product.servingSize)
+        .map<Map<double, String>>(
+            (matched) => {double.parse(matched.group(1)): matched.group(2)})
+        .toList()[0];
 
     return SafeArea(
       child: Scaffold(
@@ -130,7 +136,7 @@ class _ProductCardState extends State<ProductCard> {
                       flex: 7,
                       child: Nutrition(
                         nutriments: nutriments,
-                        quantity: gramos,
+                        quantity: quantity,
                         measureFactor: equivalentMeasures[selectedMeasure],
                       ),
                     ),
@@ -141,7 +147,7 @@ class _ProductCardState extends State<ProductCard> {
                             onSelected: (String measure) => setState(() {
                                   selectedMeasure = measure;
                                   textEditingController.text =
-                                      '${gramos.toInt()} $selectedMeasure';
+                                      '${quantity.toInt()} $selectedMeasure';
                                 }),
                             itemBuilder: (context) => equivalentMeasures.keys
                                 .map((measure) => PopupMenuItem(
@@ -165,23 +171,37 @@ class _ProductCardState extends State<ProductCard> {
                               },
                               onChanged: (value) {
                                 setState(() {
-                                  if (int.parse(value) > 500) {
-                                    textEditingController.text = '500';
-                                    value = '500';
+                                  try {
+                                    if (int.parse(value) > 500) {
+                                      textEditingController.text = '500';
+                                      value = '500';
+                                    }
+                                    if (int.parse(value) < 0) {
+                                      textEditingController.text = '0';
+                                      value = '0';
+                                    }
+                                    quantity = double.parse(value);
+                                  } catch (_) {
+                                    print('${servingMeasure.toString()} 1');
                                   }
-                                  gramos = double.parse(value);
                                 });
                               },
                               onSubmitted: (value) {
                                 textEditingController.text =
-                                    '${gramos.toInt()}  $selectedMeasure';
+                                    '${quantity.toInt()}  $selectedMeasure';
                                 setState(() {
                                   showFloatButton = true;
                                 });
                               }),
                         ),
                         RaisedButton(
-                          onPressed: () => {},
+                          onPressed: () => setState(() => {
+                                selectedMeasure =
+                                    '${servingMeasure.values.toList()[0]}',
+                                quantity = servingMeasure.keys.toList()[0],
+                                textEditingController.text =
+                                    '${quantity.toInt()} $selectedMeasure',
+                              }),
                           child: Text('Ración'),
                         )
                       ]),
@@ -189,13 +209,13 @@ class _ProductCardState extends State<ProductCard> {
                     Flexible(
                       flex: 1,
                       child: Slider(
-                          value: gramos,
+                          value: quantity,
                           max: 500.0,
                           min: 0.0,
                           divisions: 500,
                           onChanged: (double newValue) {
                             setState(() {
-                              gramos = newValue;
+                              quantity = newValue;
                               textEditingController.text =
                                   '${newValue.toInt()} $selectedMeasure';
                             });
