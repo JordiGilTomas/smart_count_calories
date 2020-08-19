@@ -19,6 +19,8 @@ class _ProductCardState extends State<ProductCard> {
   final textEditingController = TextEditingController();
   String selectedMeasure = 'gramos';
   bool showFloatButton = true;
+  double maxQuantity = 500.0;
+  double defaultQuantity = 500.0;
 
   @override
   void initState() {
@@ -43,21 +45,20 @@ class _ProductCardState extends State<ProductCard> {
     final Map<String, double> equivalentMeasures = {
       'gramos': 1.0,
       'ml': 1.0,
-      'taza desayuno': 2.5,
-      'taza té': 1.5,
-      'taza café': 1,
-      'cuchara sopera': 0.15,
-      'cuchara postre': 0.10,
-      'cuchara café': 0.05,
-      'vaso agua': 2.5,
-      'vasito vino': 1,
-      'vasito licor': 0.50
+      'taza desayuno': 250,
+      'taza té': 150,
+      'taza café': 100,
+      'cuchara sopera': 15,
+      'cuchara postre': 10,
+      'cuchara café': 5,
+      'vaso agua': 250,
+      'vasito vino': 100,
+      'vasito licor': 50
     };
 
-    final Map<double, String> servingMeasure = RegExp(r'([\d]+)([a-z]+)')
+    final Map<String, dynamic> servingMeasure = RegExp(r'([\d]+)([a-z]+)')
         .allMatches(widget.product.servingSize)
-        .map<Map<double, String>>(
-            (matched) => {double.parse(matched.group(1)): matched.group(2)})
+        .map((match) => {'quantity': match[1], 'measure': match[2]})
         .toList()[0];
 
     return SafeArea(
@@ -146,6 +147,14 @@ class _ProductCardState extends State<ProductCard> {
                         PopupMenuButton(
                             onSelected: (String measure) => setState(() {
                                   selectedMeasure = measure;
+                                  maxQuantity =
+                                      equivalentMeasures[selectedMeasure] == 1.0
+                                          ? defaultQuantity
+                                          : (500 /
+                                              equivalentMeasures[
+                                                  selectedMeasure] *
+                                              10);
+                                  quantity = maxQuantity / 2;
                                   textEditingController.text =
                                       '${quantity.toInt()} $selectedMeasure';
                                 }),
@@ -172,18 +181,17 @@ class _ProductCardState extends State<ProductCard> {
                               onChanged: (value) {
                                 setState(() {
                                   try {
-                                    if (int.parse(value) > 500) {
-                                      textEditingController.text = '500';
-                                      value = '500';
+                                    if (int.parse(value) > maxQuantity) {
+                                      textEditingController.text =
+                                          '$maxQuantity';
+                                      value = '$maxQuantity';
                                     }
                                     if (int.parse(value) < 0) {
                                       textEditingController.text = '0';
                                       value = '0';
                                     }
                                     quantity = double.parse(value);
-                                  } catch (_) {
-                                    print('${servingMeasure.toString()} 1');
-                                  }
+                                  } catch (_) {}
                                 });
                               },
                               onSubmitted: (value) {
@@ -195,13 +203,16 @@ class _ProductCardState extends State<ProductCard> {
                               }),
                         ),
                         RaisedButton(
-                          onPressed: () => setState(() => {
-                                selectedMeasure =
-                                    '${servingMeasure.values.toList()[0]}',
-                                quantity = servingMeasure.keys.toList()[0],
-                                textEditingController.text =
-                                    '${quantity.toInt()} $selectedMeasure',
-                              }),
+                          onPressed: servingMeasure['measure'] != null
+                              ? () => setState(() => {
+                                    maxQuantity = defaultQuantity,
+                                    selectedMeasure = servingMeasure['measure'],
+                                    quantity = double.parse(
+                                        servingMeasure['quantity']),
+                                    textEditingController.text =
+                                        '${quantity.toInt()} $selectedMeasure',
+                                  })
+                              : null,
                           child: Text('Ración'),
                         )
                       ]),
@@ -210,9 +221,9 @@ class _ProductCardState extends State<ProductCard> {
                       flex: 1,
                       child: Slider(
                           value: quantity,
-                          max: 500.0,
+                          max: maxQuantity,
                           min: 0.0,
-                          divisions: 500,
+                          divisions: maxQuantity.toInt(),
                           onChanged: (double newValue) {
                             setState(() {
                               quantity = newValue;
