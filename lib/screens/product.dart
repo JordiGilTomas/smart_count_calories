@@ -4,6 +4,7 @@ import 'package:openfoodfacts/model/Nutriments.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:smart_count_calories/components/nutrition.dart';
 import 'package:smart_count_calories/components/score.dart';
+import 'package:smart_count_calories/model/equivalent_measures.dart';
 
 class ProductCard extends StatefulWidget {
   ProductCard({this.product});
@@ -42,23 +43,10 @@ class _ProductCardState extends State<ProductCard> {
     final String isPalmOilFree =
         productJson['ingredients_analysis_tags'][2].toString().substring(3);
 
-    final Map<String, double> equivalentMeasures = {
-      'gramos': 1.0,
-      'ml': 1.0,
-      'taza desayuno': 250,
-      'taza té': 150,
-      'taza café': 100,
-      'cuchara sopera': 15,
-      'cuchara postre': 10,
-      'cuchara café': 5,
-      'vaso agua': 250,
-      'vasito vino': 100,
-      'vasito licor': 50
-    };
-
     final Map<String, dynamic> servingMeasure = RegExp(r'([\d]+)([a-z]+)')
         .allMatches(widget.product.servingSize)
-        .map((match) => {'quantity': match[1], 'measure': match[2]})
+        .map<Map<String, dynamic>>(
+            (match) => {'quantity': match[1], 'measure': match[2]})
         .toList()[0];
 
     return SafeArea(
@@ -138,7 +126,8 @@ class _ProductCardState extends State<ProductCard> {
                       child: Nutrition(
                         nutriments: nutriments,
                         quantity: quantity,
-                        measureFactor: equivalentMeasures[selectedMeasure],
+                        measureFactor:
+                            EquivalentMeasures.toMap()[selectedMeasure],
                       ),
                     ),
                     Flexible(
@@ -147,18 +136,20 @@ class _ProductCardState extends State<ProductCard> {
                         PopupMenuButton(
                             onSelected: (String measure) => setState(() {
                                   selectedMeasure = measure;
-                                  maxQuantity =
-                                      equivalentMeasures[selectedMeasure] == 1.0
-                                          ? defaultQuantity
-                                          : (500 /
-                                              equivalentMeasures[
-                                                  selectedMeasure] *
-                                              10);
+                                  maxQuantity = EquivalentMeasures.toMap()[
+                                              selectedMeasure] ==
+                                          1.0
+                                      ? defaultQuantity
+                                      : (defaultQuantity /
+                                          EquivalentMeasures.toMap()[
+                                              selectedMeasure] *
+                                          10);
                                   quantity = maxQuantity / 2;
                                   textEditingController.text =
                                       '${quantity.toInt()} $selectedMeasure';
                                 }),
-                            itemBuilder: (context) => equivalentMeasures.keys
+                            itemBuilder: (context) => EquivalentMeasures.toMap()
+                                .keys
                                 .map((measure) => PopupMenuItem(
                                       child: Text('$measure'),
                                       value: measure,
