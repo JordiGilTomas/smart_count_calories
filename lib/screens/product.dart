@@ -36,12 +36,15 @@ class _ProductCardState extends State<ProductCard> {
     final Iterable<MapEntry<String, Level>> levels =
         widget.product.nutrientLevels.levels.entries;
     final Map<String, dynamic> productJson = widget.product.toJson();
-    final String isVegan =
-        productJson['ingredients_analysis_tags'][0].toString().substring(3);
-    final String isVegetarian =
-        productJson['ingredients_analysis_tags'][1].toString().substring(3);
-    final String isPalmOilFree =
-        productJson['ingredients_analysis_tags'][2].toString().substring(3);
+    final bool isVegan =
+        productJson['ingredients_analysis_tags'][0].toString().substring(3) ==
+            'vegan';
+    final bool isVegetarian =
+        productJson['ingredients_analysis_tags'][1].toString().substring(3) ==
+            'vegetarian';
+    final bool isPalmOilFree =
+        productJson['ingredients_analysis_tags'][2].toString().substring(3) ==
+            'palm-oil-free';
 
     final Map<String, dynamic> servingMeasure = RegExp(r'([\d]+)([a-z]+)')
         .allMatches(widget.product.servingSize)

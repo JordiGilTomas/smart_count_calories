@@ -17,9 +17,9 @@ class Score extends StatelessWidget {
 
   final Nutriments nutriments;
   final Iterable<MapEntry<String, Level>> levels;
-  final String isVegan;
-  final String isVegetarian;
-  final String isPalmOilFree;
+  final bool isVegan;
+  final bool isVegetarian;
+  final bool isPalmOilFree;
   final String nutriscore;
 
   @override
