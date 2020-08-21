@@ -3,11 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:openfoodfacts/model/NutrientLevels.dart';
 import 'package:openfoodfacts/model/Nutriments.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
-import 'package:smart_count_calories/components/loading_animtation.dart';
-import 'package:smart_count_calories/components/nutrition.dart';
-import 'package:smart_count_calories/components/score.dart';
-import 'package:smart_count_calories/model/additive.dart';
-import 'package:smart_count_calories/model/equivalent_measures.dart';
+
+import '../components/loading_animation.dart';
+import '../components/nutrition.dart';
+import '../components/score.dart';
+import '../model/additive.dart';
+import '../model/equivalent_measures.dart';
 
 class ProductCard extends StatefulWidget {
   ProductCard({this.product});
@@ -18,15 +19,14 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-  double quantity = 100.0;
-
-  final textEditingController = TextEditingController();
-  String selectedMeasure = 'gramos';
-  bool showFloatButton = true;
-  double maxQuantity = 500.0;
-  double defaultQuantity = 500.0;
-  Map<String, dynamic> additives;
+  final TextEditingController textEditingController = TextEditingController();
   bool isLoading = true;
+  bool showFloatButton = true;
+  double defaultQuantity = 500.0;
+  double maxQuantity = 500.0;
+  double quantity = 100.0;
+  String selectedMeasure = 'gramos';
+  Map<String, dynamic> additives;
 
   Future<void> loadAdditiveData() async =>
       additives = await Additive.fromJson();
@@ -77,7 +77,7 @@ class _ProductCardState extends State<ProductCard> {
           title: const Text('Smart Count Calories'),
         ),
         body: isLoading
-            ? LoadingWidget()
+            ? const LoadingWidget()
             : DefaultTabController(
                 length: 3,
                 initialIndex: 1,
@@ -258,20 +258,20 @@ class _ProductCardState extends State<ProductCard> {
                             padding: EdgeInsets.all(20.0),
                             child: Column(children: [
                               const Text('Aditivos: '),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10.0,
                               ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  Flexible(
+                                  const Flexible(
                                       fit: FlexFit.tight,
                                       child: Text(
                                         'Nombre',
                                         textAlign: TextAlign.center,
                                       )),
-                                  Flexible(
+                                  const Flexible(
                                       fit: FlexFit.tight,
                                       child: Text(
                                         'Riesgo exposición',
@@ -279,7 +279,7 @@ class _ProductCardState extends State<ProductCard> {
                                       )),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10.0,
                               ),
                               for (var additive
