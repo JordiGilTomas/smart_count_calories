@@ -22,7 +22,7 @@ class Nutrition extends StatelessWidget {
       mainAxisSpacing: 20,
       crossAxisCount: 3,
       childAspectRatio: 20 / 17,
-      shrinkWrap: true,
+      shrinkWrap: false,
       children: [
         ItemNutrition(
           topNameLine1: 'Energía',
@@ -65,6 +65,16 @@ class Nutrition extends StatelessWidget {
         ItemNutrition(
           topNameLine1: 'Proteínas',
           value: ((nutriments.proteins ?? 0) * quantity / 100 * measureFactor)
+              .toStringAsFixed(2),
+        ),
+        ItemNutrition(
+          topNameLine1: 'Sal',
+          value: ((nutriments.salt ?? 0) * quantity / 100 * measureFactor)
+              .toStringAsFixed(2),
+        ),
+        ItemNutrition(
+          topNameLine1: 'Sodio',
+          value: ((nutriments.salt ?? 0) * quantity / 100 * 0.4 * measureFactor)
               .toStringAsFixed(2),
         ),
         ItemNutrition(

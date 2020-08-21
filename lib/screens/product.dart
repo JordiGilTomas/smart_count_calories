@@ -1,3 +1,4 @@
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:openfoodfacts/model/NutrientLevels.dart';
@@ -23,7 +24,6 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   final TextEditingController textEditingController = TextEditingController();
   bool isLoading = true;
-  bool showFloatButton = true;
   double defaultQuantity = 500.0;
   double maxQuantity = 500.0;
   double quantity = 100.0;
@@ -77,12 +77,37 @@ class _ProductCardState extends State<ProductCard> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          elevation: 0.0,
-          leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context)),
-          title: const Text('Smart Count Calories'),
+        bottomNavigationBar: ConvexAppBar(
+          backgroundColor: Colors.black,
+          activeColor: Colors.blueAccent,
+          style: TabStyle.fixedCircle,
+          color: Colors.blue,
+
+          items: [
+            TabItem(
+              title: 'Home',
+              icon: Icon(Icons.home),
+            ),
+            TabItem(
+              title: 'Home',
+              icon: Icon(Icons.home),
+            ),
+            TabItem(
+              title: 'Añadir',
+              isIconBlend: true,
+              icon: Icon(Icons.add, size: 40.0),
+            ),
+            TabItem(
+              title: 'Home',
+              icon: Icon(Icons.home),
+            ),
+            TabItem(
+              title: 'Home',
+              icon: Icon(Icons.home),
+            ),
+          ],
+          initialActiveIndex: 2, //optional, default as 0
+          onTap: (int i) => print('click index=$i'),
         ),
         body: isLoading
             ? const LoadingWidget()
@@ -92,13 +117,6 @@ class _ProductCardState extends State<ProductCard> {
                 child: Column(children: [
                   Expanded(
                     child: Scaffold(
-                      floatingActionButton: showFloatButton
-                          ? FloatingActionButton.extended(
-                              icon: const Icon(Icons.add),
-                              onPressed: () => null,
-                              label: const Text('Añadir producto'),
-                            )
-                          : null,
                       appBar: AppBar(
                         leading: Padding(
                           padding: const EdgeInsets.all(10.0),
@@ -151,121 +169,125 @@ class _ProductCardState extends State<ProductCard> {
                         ),
                       ),
                       body: TabBarView(children: [
-                        Column(children: [
-                          Flexible(
-                            flex: 7,
-                            child: Nutrition(
-                              nutriments: nutriments,
-                              quantity: quantity,
-                              measureFactor:
-                                  EquivalentMeasures.toMap()[selectedMeasure],
-                            ),
-                          ),
-                          Flexible(
-                            flex: 2,
-                            child: Row(children: [
-                              PopupMenuButton(
-                                  onSelected: (String measure) => setState(() {
-                                        selectedMeasure = measure;
-                                        maxQuantity = EquivalentMeasures
-                                                    .toMap()[selectedMeasure] ==
-                                                1.0
-                                            ? defaultQuantity
-                                            : defaultQuantity / 10;
-                                        quantity = maxQuantity / 2;
-                                        textEditingController.text =
-                                            '${quantity.toInt()} $selectedMeasure';
-                                      }),
-                                  itemBuilder: (context) =>
-                                      EquivalentMeasures.toMap()
-                                          .keys
-                                          .map((measure) => PopupMenuItem(
-                                                child: Text('$measure'),
-                                                value: measure,
-                                              ))
-                                          .toList()),
-                              Expanded(
-                                child: TextField(
-                                    decoration: InputDecoration(isDense: true),
-                                    controller: textEditingController,
-                                    textAlign: TextAlign.center,
-                                    keyboardType: TextInputType.number,
-                                    onEditingComplete: () {
-                                      FocusScope.of(context).unfocus();
-                                      setState(() => showFloatButton = true);
-                                    },
-                                    onTap: () {
-                                      setState(() {
-                                        showFloatButton = false;
-                                        textEditingController.text =
-                                            textEditingController.text
-                                                .split('$selectedMeasure')[1];
-                                        showFloatButton = false;
-                                      });
-                                    },
-                                    onChanged: (value) {
-                                      setState(() {
-                                        try {
-                                          if (int.parse(value) > maxQuantity) {
+                        Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                flex: 9,
+                                child: Nutrition(
+                                  nutriments: nutriments,
+                                  quantity: quantity,
+                                  measureFactor: EquivalentMeasures.toMap()[
+                                      selectedMeasure],
+                                ),
+                              ),
+                              Flexible(
+                                flex: 2,
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 20.0),
+                                  child: Row(children: [
+                                    PopupMenuButton(
+                                        onSelected: (String measure) =>
+                                            setState(() {
+                                              selectedMeasure = measure;
+                                              maxQuantity = EquivalentMeasures
+                                                              .toMap()[
+                                                          selectedMeasure] ==
+                                                      1.0
+                                                  ? defaultQuantity
+                                                  : defaultQuantity / 10;
+                                              quantity = maxQuantity / 2;
+                                              textEditingController.text =
+                                                  '${quantity.toInt()} $selectedMeasure';
+                                            }),
+                                        itemBuilder: (context) =>
+                                            EquivalentMeasures.toMap()
+                                                .keys
+                                                .map((measure) => PopupMenuItem(
+                                                      child: Text('$measure'),
+                                                      value: measure,
+                                                    ))
+                                                .toList()),
+                                    Flexible(
+                                      child: TextField(
+                                          decoration:
+                                              InputDecoration(isDense: true),
+                                          controller: textEditingController,
+                                          textAlign: TextAlign.center,
+                                          keyboardType: TextInputType.number,
+                                          onEditingComplete: () {
+                                            FocusScope.of(context).unfocus();
+                                          },
+                                          onTap: () {
+                                            setState(() {
+                                              textEditingController.text =
+                                                  textEditingController.text
+                                                      .split(
+                                                          '$selectedMeasure')[1];
+                                            });
+                                          },
+                                          onChanged: (value) {
+                                            setState(() {
+                                              try {
+                                                if (int.parse(value) >
+                                                    maxQuantity) {
+                                                  textEditingController.text =
+                                                      '$maxQuantity';
+                                                  value = '$maxQuantity';
+                                                }
+                                                if (int.parse(value) < 0) {
+                                                  textEditingController.text =
+                                                      '0';
+                                                  value = '0';
+                                                }
+                                                quantity = double.parse(value);
+                                              } catch (_) {}
+                                            });
+                                          },
+                                          onSubmitted: (value) {
                                             textEditingController.text =
-                                                '$maxQuantity';
-                                            value = '$maxQuantity';
-                                          }
-                                          if (int.parse(value) < 0) {
-                                            textEditingController.text = '0';
-                                            value = '0';
-                                          }
-                                          quantity = double.parse(value);
-                                        } catch (_) {}
-                                      });
-                                    },
-                                    onSubmitted: (value) {
-                                      textEditingController.text =
-                                          '${quantity.toInt()}  $selectedMeasure';
+                                                '${quantity.toInt()}  $selectedMeasure';
+                                          }),
+                                    ),
+                                    RaisedButton(
+                                      onPressed: servingMeasure != null
+                                          ? () => setState(() => {
+                                                maxQuantity = defaultQuantity,
+                                                selectedMeasure =
+                                                    servingMeasure['measure'],
+                                                quantity = double.parse(
+                                                    servingMeasure['quantity']),
+                                                textEditingController.text =
+                                                    '${quantity.toInt()} $selectedMeasure',
+                                              })
+                                          : null,
+                                      child: Text('Ración'),
+                                    )
+                                  ]),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 15.0,
+                              ),
+                              Flexible(
+                                flex: 1,
+                                child: Slider(
+                                    value: quantity,
+                                    max: maxQuantity,
+                                    min: 0.0,
+                                    divisions: maxQuantity.toInt(),
+                                    onChanged: (double newValue) {
                                       setState(() {
-                                        showFloatButton = true;
+                                        quantity = newValue;
+                                        textEditingController.text =
+                                            '${newValue.toInt()} $selectedMeasure';
                                       });
                                     }),
                               ),
-                              RaisedButton(
-                                onPressed: servingMeasure != null
-                                    ? () => setState(() => {
-                                          maxQuantity = defaultQuantity,
-                                          selectedMeasure =
-                                              servingMeasure['measure'],
-                                          quantity = double.parse(
-                                              servingMeasure['quantity']),
-                                          textEditingController.text =
-                                              '${quantity.toInt()} $selectedMeasure',
-                                        })
-                                    : null,
-                                child: Text('Ración'),
+                              SizedBox(
+                                height: 35.0,
                               )
                             ]),
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: Slider(
-                                value: quantity,
-                                max: maxQuantity,
-                                min: 0.0,
-                                divisions: maxQuantity.toInt(),
-                                onChangeStart: (_) =>
-                                    setState(() => showFloatButton = false),
-                                onChangeEnd: (_) =>
-                                    setState(() => showFloatButton = true),
-                                onChanged: (double newValue) {
-                                  setState(() {
-                                    quantity = newValue;
-                                    textEditingController.text =
-                                        '${newValue.toInt()} $selectedMeasure';
-                                  });
-                                }),
-                          ),
-                          SizedBox(
-                            height: 25.0,
-                          )
-                        ]),
                         Score(
                             nutriscore: widget.product.nutriscore,
                             nutriments: nutriments,
@@ -287,7 +309,7 @@ class _ProductCardState extends State<ProductCard> {
                               const Text('Contiene trazas de: '),
                               for (var tag in widget.product.tracesTags)
                                 Text(
-                                  '${allergenNameTranslated(tag.substring(3))} ',
+                                  allergenNameTranslated(tag.substring(3)),
                                 ),
                             ]),
                           )

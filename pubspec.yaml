@@ -30,6 +30,7 @@ dependencies:
   openfoodfacts: ^0.3.10
   flutter_barcode_scanner: ^1.0.1
   flutter_svg: ^0.18.0
+  convex_bottom_bar: ^2.4.1
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +49,7 @@ flutter:
   assets:
     - images/
     - lib/model/additives.json
+    - lib/model/allergens.json
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see
