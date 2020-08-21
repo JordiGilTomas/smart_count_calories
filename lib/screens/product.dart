@@ -190,8 +190,13 @@ class _ProductCardState extends State<ProductCard> {
                                     controller: textEditingController,
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
+                                    onEditingComplete: () {
+                                      FocusScope.of(context).unfocus();
+                                      setState(() => showFloatButton = true);
+                                    },
                                     onTap: () {
                                       setState(() {
+                                        showFloatButton = false;
                                         textEditingController.text =
                                             textEditingController.text
                                                 .split('$selectedMeasure')[1];
@@ -245,6 +250,10 @@ class _ProductCardState extends State<ProductCard> {
                                 max: maxQuantity,
                                 min: 0.0,
                                 divisions: maxQuantity.toInt(),
+                                onChangeStart: (_) =>
+                                    setState(() => showFloatButton = false),
+                                onChangeEnd: (_) =>
+                                    setState(() => showFloatButton = true),
                                 onChanged: (double newValue) {
                                   setState(() {
                                     quantity = newValue;
@@ -252,6 +261,9 @@ class _ProductCardState extends State<ProductCard> {
                                         '${newValue.toInt()} $selectedMeasure';
                                   });
                                 }),
+                          ),
+                          SizedBox(
+                            height: 25.0,
                           )
                         ]),
                         Score(
