@@ -4,10 +4,12 @@ import 'package:openfoodfacts/model/NutrientLevels.dart';
 import 'package:openfoodfacts/model/Nutriments.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 
+import '../components/additives_table.dart';
 import '../components/loading_animation.dart';
 import '../components/nutrition.dart';
 import '../components/score.dart';
 import '../model/additive.dart';
+import '../model/allergen.dart';
 import '../model/equivalent_measures.dart';
 
 class ProductCard extends StatefulWidget {
@@ -26,17 +28,20 @@ class _ProductCardState extends State<ProductCard> {
   double maxQuantity = 500.0;
   double quantity = 100.0;
   String selectedMeasure = 'gramos';
-  Map<String, dynamic> additives;
+  Map<String, dynamic> additivesTraductions;
+  Map<String, dynamic> allergensTraductions;
 
-  Future<void> loadAdditiveData() async =>
-      additives = await Additive.fromJson();
+  Future<void> loadData() async {
+    additivesTraductions = await Additive.fromJson();
+    allergensTraductions = await Allergen.fromJson();
+  }
 
   @override
   void initState() {
     super.initState();
     textEditingController.text = '100 gramos';
 
-    loadAdditiveData().whenComplete(() {
+    loadData().whenComplete(() {
       setState(() => isLoading = false);
     });
   }
@@ -66,6 +71,9 @@ class _ProductCardState extends State<ProductCard> {
                     (match) => {'quantity': match[1], 'measure': match[2]})
                 .toList()[0]
             : null;
+
+    String allergenNameTranslated(String allergen) =>
+        allergensTraductions[allergen]['name'];
 
     return SafeArea(
       child: Scaffold(
@@ -257,60 +265,17 @@ class _ProductCardState extends State<ProductCard> {
                           Padding(
                             padding: EdgeInsets.all(20.0),
                             child: Column(children: [
-                              const Text('Aditivos: '),
-                              const SizedBox(
-                                height: 10.0,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  const Flexible(
-                                      fit: FlexFit.tight,
-                                      child: Text(
-                                        'Nombre',
-                                        textAlign: TextAlign.center,
-                                      )),
-                                  const Flexible(
-                                      fit: FlexFit.tight,
-                                      child: Text(
-                                        'Riesgo exposición',
-                                        textAlign: TextAlign.center,
-                                      )),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10.0,
-                              ),
-                              for (var additive
-                                  in widget.product.additives.names)
-                                Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Flexible(
-                                        fit: FlexFit.tight,
-                                        child: Text(
-                                          '${additives[additive] != null ? additives[additive]['name'] : additive}',
-                                          textAlign: TextAlign.left,
-                                        ),
-                                      ),
-                                      Flexible(
-                                        fit: FlexFit.tight,
-                                        child: Text(
-                                          '${additives[additive] != null ? additives[additive]['overexposure_risk'] : ''}',
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ]),
+                              AdditivesTable(
+                                  additives: widget.product.additives.names,
+                                  additivesTranslated: additivesTraductions),
                               const Text('Alérgenos: '),
                               for (var allergen
                                   in widget.product.allergens.names)
-                                Text('$allergen '),
+                                Text(allergenNameTranslated(allergen)),
                               const Text('Contiene trazas de: '),
                               for (var tag in widget.product.tracesTags)
                                 Text(
-                                  '${tag.substring(3)} ',
+                                  '${allergenNameTranslated(tag.substring(3))} ',
                                 ),
                             ]),
                           )
